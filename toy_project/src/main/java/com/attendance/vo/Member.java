@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Member {
+public class Member { // 회원
 
   private int userIdx; // 사용자 고유 번호
   private String userId; // 사용자 ID
