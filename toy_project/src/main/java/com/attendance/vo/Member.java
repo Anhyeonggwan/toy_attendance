@@ -20,5 +20,6 @@ public class Member { // 회원
   private LocalDateTime userUpdateDate; // 수정일
   private int userFailCnt; // 로그인 실패 횟수
   private int userStatus; // 사용자 상태
+  private String userGrade;
 
 }

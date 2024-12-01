@@ -6,6 +6,7 @@ PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
 	
 	<!-- 별칭 작성 부분 -->
 	<typeAliases>
+		<typeAlias type="com.attendance.vo.Sample" alias="sample"/>
 		<!-- <typeAlias type="edu.kh.comm.member.model.vo.Member" alias="member"/>
 		<typeAlias type="edu.kh.comm.board.model.vo.Board"  		alias="board"/>
 		<typeAlias type="edu.kh.comm.board.model.vo.BoardDetail"  	alias="detail"/>
