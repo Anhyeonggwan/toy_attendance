@@ -1,10 +1,15 @@
 package com.attendance.service;
 
+import java.util.Map;
+
 import org.json.simple.JSONObject;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 
+import com.attendance.config.JwtProvider;
+import com.attendance.config.RefreshToken;
 import com.attendance.dao.MemberDao;
 import com.attendance.util.ApiException;
 import com.attendance.vo.Member;
@@ -19,10 +24,10 @@ public class MemberServiceImpl implements MemberService{
 	
 	private final MemberDao memberDao;
 	private final PasswordEncoder passwordEncoder;
+	private final JwtProvider jwtProvider;
 	
 	@Override
 	public JSONObject isDupleIdpProc(String userId) {
-		log.info("userid >>> " + userId);
 		JSONObject object = new JSONObject();
 		
 		if(ObjectUtils.isEmpty(userId)) throw new ApiException("500", "필수 값이 없습니다.");
@@ -32,7 +37,6 @@ public class MemberServiceImpl implements MemberService{
 		object.put("data", true);
 		
 		Member member = memberDao.findMemberbyId(userId);
-		log.info("member >>> " + member);
 		
 		if(member != null) {
 			object.put("message", "이미 사용 중인 아이디입니다.");
@@ -43,6 +47,7 @@ public class MemberServiceImpl implements MemberService{
 	}
 
 	@Override
+	@Transactional
 	public JSONObject signupProc(Member member) {
 		JSONObject object = new JSONObject();
 		
@@ -54,6 +59,10 @@ public class MemberServiceImpl implements MemberService{
 		
 		if(ObjectUtils.isEmpty(userId) || ObjectUtils.isEmpty(userPw) || ObjectUtils.isEmpty(name) || ObjectUtils.isEmpty(phone) || ObjectUtils.isEmpty(email)) {
 			throw new ApiException("500", "필수값이 없습니다.");
+		}
+		
+		if(!(boolean)isDupleIdpProc(member.getUserId()).get("data")) {
+			throw new ApiException("500", "이미 사용중인 아이디입니다.");
 		}
 		
 		object = insertMember(member);	// 회원 insert
@@ -76,6 +85,41 @@ public class MemberServiceImpl implements MemberService{
 		return object;
 	}
 	
+	
+	@Override
+	public JSONObject getLogin(Map<String, Object> map) {
+		
+		String user_id = map.get("user_id").toString();
+		String password = map.get("password").toString();
+		
+		if(ObjectUtils.isEmpty(user_id) || ObjectUtils.isEmpty(password)) throw new ApiException("500", "필수값이 없습니다.");
+		
+		Member member = memberDao.findMemberbyId(user_id);
+		log.info("member >>> " + member);
+		
+		if(member == null) throw new ApiException("500", "아이디 또는 비밀번호가 올바르지 않습니다.");
+		
+		if(!passwordEncoder.matches(password, member.getUserPassword())) throw new ApiException("500", "아이디 또는 비밀번호가 올바르지 않습니다.");
+		
+		log.info("통과");
+		
+		// jwt 토큰 생성
+		String accessToken = jwtProvider.generateAccessToken(member.getUserIdx());
+		
+		// 기존에 가지고 있는 사용자의 refresh token 제거
+		RefreshToken.removeUserRemoveRefreshToken(member.getUserIdx());
+		
+		// refresh token 생성 후 저장
+		String reFreshToken = jwtProvider.generateRefreshToken(member.getUserIdx());
+		RefreshToken.putRefreshToken(reFreshToken, member.getUserIdx());
+		
+		JSONObject object = new JSONObject();
+		object.put("code", "200");
+		object.put("accessToken", accessToken);
+		object.put("refreshToken", reFreshToken);
+		
+		return object;
+	}
 }
 
 

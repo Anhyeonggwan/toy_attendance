@@ -13,6 +13,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.AccessDeniedHandler;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -23,6 +24,8 @@ import lombok.RequiredArgsConstructor;
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
+	
+	private final JwtAuthFilter jwtAuthFilter;
 
 	/*
 	 * 코드 설명 csrf : csrf(Cross site Request forgery) 설정을 disable 하였습니다.
@@ -62,6 +65,7 @@ public class SecurityConfig {
 						.accessDeniedHandler(accessDeniedHandler))
 				.logout((logout) -> logout.logoutSuccessUrl("/").invalidateHttpSession(true))
 				.sessionManagement((sessionmng) -> sessionmng.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+		http.addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 		return http.build();
 	}
 	

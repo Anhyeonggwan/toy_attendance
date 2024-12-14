@@ -16,7 +16,17 @@
   	, USER_GRADE		AS userGrade
   </sql>
   
-  <!-- 회원가입 -->
+  <select id="getLogin" parameterType="hashmap" resultType="member">
+  	SELECT
+  		 <include refid="memberSelect"></include>
+  	FROM TBL_MEMBER
+  	WHERE
+  		USER_ID = #{user_id}
+  	AND
+  		USER_PASSWORD = #{password}; 
+  </select>
+  
+  <!-- 아이디 조회 -->
   <select id="findMemberbyId" parameterType="string" resultType="member">
   	SELECT
   		 <include refid="memberSelect"></include>
@@ -45,7 +55,7 @@
   		, #{userName}
   		, #{userPhone}
   		, #{userEmail}
-  		, #{userCreateDate}
+  		, now()
   		, 0
   		, 1
   		, 'NORMAL'
