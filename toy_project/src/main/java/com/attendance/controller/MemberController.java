@@ -34,9 +34,9 @@ public class MemberController {
 		return ResponseEntity.ok(memberService.signupProc(member));
 	}
 	
-	@GetMapping("/userDetail")
-	public ResponseEntity<JSONObject> getUserDetail(Map<String, Object> map){
-		return null;
+	@GetMapping("/normal/userDetail")
+	public ResponseEntity<JSONObject> getUserDetail(@RequestParam Map<String, String> map){
+		return ResponseEntity.ok(memberService.getUserDetail(map));
 	}
 	
 	@PostMapping("/login")

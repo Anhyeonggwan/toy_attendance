@@ -16,6 +16,13 @@
   	, USER_GRADE		AS userGrade
   </sql>
   
+  <select id="findUserByIdx" parameterType="string" resultType="member">
+  	SELECT 
+  		<include refid="memberSelect"></include>
+  	FROM TBL_MEMBER
+  	WHERE USER_IDX = ${idx};
+  </select>
+  
   <select id="getLogin" parameterType="hashmap" resultType="member">
   	SELECT
   		 <include refid="memberSelect"></include>
@@ -58,7 +65,7 @@
   		, now()
   		, 0
   		, 1
-  		, 'NORMAL'
+  		, 'ROLE_NORMAL'
   	);
   </insert>
   

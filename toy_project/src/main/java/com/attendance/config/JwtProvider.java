@@ -1,5 +1,6 @@
 package com.attendance.config;
 
+import java.util.Base64;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -37,7 +38,8 @@ public class JwtProvider { // JWT를 생성, 검증, 및 관리를 담당하는 
     public void init() {
     	// Base64 를 통해 시크릿 키를 인고딩 한 다음,
     	// Keys.hmacShaKeyFor()을 사용해 시크릿 키 객체를 생성해 사용한다.
-        key = Keys.hmacShaKeyFor(secret.getBytes());
+    	byte[] decodedKey = Base64.getDecoder().decode(secret);
+        key = Keys.hmacShaKeyFor(decodedKey);
     }
     
     /**
@@ -64,6 +66,7 @@ public class JwtProvider { // JWT를 생성, 검증, 및 관리를 담당하는 
             return null;
 
         final Claims claims = getAllClaimsFromToken(token);
+        System.out.println("claims >>> " + claims);
 
         return claimsResolver.apply(claims);
     }
@@ -189,9 +192,10 @@ public class JwtProvider { // JWT를 생성, 검증, 및 관리를 담당하는 
                     .parseClaimsJws(token);
             return true;
         } catch (SecurityException e) {
-            log.warn("Invalid JWT signature: {}", e.getMessage());
+            log.error("Invalid JWT signature: {}", e.getMessage());
         } catch (MalformedJwtException e) {
-            log.warn("Invalid JWT token: {}", e.getMessage());
+        	System.out.println("여기?");
+            log.error("Invalid JWT token: {}", e.getMessage());
         } catch (ExpiredJwtException e) {
             log.warn("JWT token is expired: {}", e.getMessage());
         } catch (UnsupportedJwtException e) {

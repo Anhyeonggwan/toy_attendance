@@ -12,5 +12,6 @@ public interface MemberDao {
 	public int insertMembe(Member member);
 	public Member findMemberbyId(String userId);
 	public Member getLogin(Map<String, Object> map);
+	public Member findUserByIdx(String idx);
 
 }

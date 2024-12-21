@@ -4,6 +4,7 @@ import java.io.PrintWriter;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -56,7 +57,7 @@ public class SecurityConfig {
 				.cors((cors) -> cors.disable())
 				.authorizeHttpRequests(request -> request.dispatcherTypeMatchers(DispatcherType.FORWARD).permitAll()
 						.requestMatchers("/user/login", "/", "/user/signup", "/user/isDupleId").permitAll()
-						.requestMatchers("/user/normal/**").hasRole("NORMAL")
+						.requestMatchers(HttpMethod.GET, "/user/normal/**").hasRole("NORMAL")
 						.requestMatchers("/user/admin/**").hasRole("ADMIN")
 						.anyRequest().authenticated())
 				// .formLogin((formLogin) ->

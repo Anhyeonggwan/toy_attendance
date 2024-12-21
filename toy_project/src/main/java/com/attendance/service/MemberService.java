@@ -11,5 +11,6 @@ public interface MemberService {
 	public JSONObject signupProc(Member member);	// 회원 가입
 	public JSONObject isDupleIdpProc(String userId); // 회원 가입 시 아이디 중복 체크
 	public JSONObject getLogin(Map<String, Object> map); // 로그인
+	public JSONObject getUserDetail(Map<String, String> map);	// 회원 상세
 
 }

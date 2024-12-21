@@ -95,13 +95,10 @@ public class MemberServiceImpl implements MemberService{
 		if(ObjectUtils.isEmpty(user_id) || ObjectUtils.isEmpty(password)) throw new ApiException("500", "필수값이 없습니다.");
 		
 		Member member = memberDao.findMemberbyId(user_id);
-		log.info("member >>> " + member);
 		
 		if(member == null) throw new ApiException("500", "아이디 또는 비밀번호가 올바르지 않습니다.");
 		
 		if(!passwordEncoder.matches(password, member.getUserPassword())) throw new ApiException("500", "아이디 또는 비밀번호가 올바르지 않습니다.");
-		
-		log.info("통과");
 		
 		// jwt 토큰 생성
 		String accessToken = jwtProvider.generateAccessToken(member.getUserIdx());
@@ -117,6 +114,33 @@ public class MemberServiceImpl implements MemberService{
 		object.put("code", "200");
 		object.put("accessToken", accessToken);
 		object.put("refreshToken", reFreshToken);
+		
+		return object;
+	}
+	
+	@Override
+	public JSONObject getUserDetail(Map<String, String> map) {
+		JSONObject object = new JSONObject();
+		
+		String idx = map.get("idx").toString();
+		log.info("idx >>> " + idx);
+		
+		if(ObjectUtils.isEmpty(idx)) throw new ApiException("500", "필수 값이 없습니다.");
+		
+		
+		try {
+			Integer.parseInt(idx);
+		}catch (NumberFormatException e) {
+			throw new ApiException("500", "처리 중 에러가 발생하였습니다.");
+		}
+		
+		Member member = memberDao.findUserByIdx(idx);
+		
+		if(member == null) throw new ApiException("500", "회원이 존재하지 않습니다.");
+		
+		object.put("code", "200");
+		object.put("message", "success");
+		object.put("data", member);
 		
 		return object;
 	}
