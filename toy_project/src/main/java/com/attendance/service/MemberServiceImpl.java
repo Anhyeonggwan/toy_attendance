@@ -114,7 +114,7 @@ public class MemberServiceImpl implements MemberService{
 		RefreshToken.removeUserRemoveRefreshToken(member.getUserIdx());
 		
 		// refresh token 생성 후 저장
-		String reFreshToken = jwtProvider.generateRefreshToken(member.getUserIdx()); 
+		String reFreshToken = jwtProvider.generateRefreshToken(member.getUserId()); 
 		RefreshToken.putRefreshToken(reFreshToken, member.getUserIdx());
 		
 		repository.save(new com.attendance.vo.RefreshToken(reFreshToken, member.getUserIdx()));

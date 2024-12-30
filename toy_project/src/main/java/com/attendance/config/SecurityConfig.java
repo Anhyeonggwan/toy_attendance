@@ -56,7 +56,7 @@ public class SecurityConfig {
 				.httpBasic((httpBasic) -> httpBasic.disable())
 				.cors((cors) -> cors.disable())
 				.authorizeHttpRequests(request -> request.dispatcherTypeMatchers(DispatcherType.FORWARD).permitAll()
-						.requestMatchers("/user/login", "/", "/user/signup", "/user/isDupleId").permitAll()
+						.requestMatchers("/user/login", "/", "/user/signup", "/user/isDupleId", "/refresh-token").permitAll()
 						.requestMatchers(HttpMethod.GET, "/user/normal/**").hasRole("NORMAL")
 						.requestMatchers("/user/admin/**").hasRole("ADMIN")
 						.anyRequest().authenticated())
