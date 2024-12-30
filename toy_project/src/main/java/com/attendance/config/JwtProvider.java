@@ -66,7 +66,6 @@ public class JwtProvider { // JWT를 생성, 검증, 및 관리를 담당하는 
             return null;
 
         final Claims claims = getAllClaimsFromToken(token);
-        System.out.println("claims >>> " + claims);
 
         return claimsResolver.apply(claims);
     }

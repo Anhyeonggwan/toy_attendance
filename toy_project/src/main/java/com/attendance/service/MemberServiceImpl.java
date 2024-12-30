@@ -11,11 +11,17 @@ import org.springframework.util.ObjectUtils;
 import com.attendance.config.JwtProvider;
 import com.attendance.config.RefreshToken;
 import com.attendance.dao.MemberDao;
+import com.attendance.dao.RefreshTokenRepository;
 import com.attendance.util.ApiException;
 import com.attendance.vo.Member;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+
+// access token은 유효 기간이 짧기 때문에 탈취하더라도 오랫동안 사용할 수 없다. 
+// 하지만 refresh token을 탈취당한다면 refresh token이 만료되기 전까지 이 refresh token으로 계속 access token을 발급해낼 수 있다. 
+// 심지어 refresh token의 유효 기간을 길게 설정했기 때문에 오랜 기간 사용자인 체 요청을 할 수 있다. 
+// 이를 해결하기 위한 방법은 RTR(refresh token rotation)이 존재한다.
 
 @Service
 @RequiredArgsConstructor
@@ -25,6 +31,7 @@ public class MemberServiceImpl implements MemberService{
 	private final MemberDao memberDao;
 	private final PasswordEncoder passwordEncoder;
 	private final JwtProvider jwtProvider;
+	private final RefreshTokenRepository repository;
 	
 	@Override
 	public JSONObject isDupleIdpProc(String userId) {
@@ -107,8 +114,10 @@ public class MemberServiceImpl implements MemberService{
 		RefreshToken.removeUserRemoveRefreshToken(member.getUserIdx());
 		
 		// refresh token 생성 후 저장
-		String reFreshToken = jwtProvider.generateRefreshToken(member.getUserIdx());
+		String reFreshToken = jwtProvider.generateRefreshToken(member.getUserIdx()); 
 		RefreshToken.putRefreshToken(reFreshToken, member.getUserIdx());
+		
+		repository.save(new com.attendance.vo.RefreshToken(reFreshToken, member.getUserIdx()));
 		
 		JSONObject object = new JSONObject();
 		object.put("code", "200");
@@ -123,7 +132,6 @@ public class MemberServiceImpl implements MemberService{
 		JSONObject object = new JSONObject();
 		
 		String idx = map.get("idx").toString();
-		log.info("idx >>> " + idx);
 		
 		if(ObjectUtils.isEmpty(idx)) throw new ApiException("500", "필수 값이 없습니다.");
 		

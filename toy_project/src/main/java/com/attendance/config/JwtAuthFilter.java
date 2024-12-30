@@ -28,14 +28,12 @@ public class JwtAuthFilter extends OncePerRequestFilter{
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException{
 		final String token = request.getHeader("Authorization");
-		logger.info("token >>> " + token);
 		String userName = "";
 		
 		// Bearer token 검증 후 user name 조회
 		if(token != null && !token.isEmpty()) {
 			String jwtToken = token.substring(7);
 			userName = jwtProvider.getUsernameFromToken(jwtToken);
-			logger.info("userName >>> " + userName);
 		}
 		
 		if(userName != null && !userName.isEmpty() && SecurityContextHolder.getContext().getAuthentication() == null) {
@@ -54,7 +52,6 @@ public class JwtAuthFilter extends OncePerRequestFilter{
      */
 	private UsernamePasswordAuthenticationToken getUserAuth(String username) {
 		Member member = memberDao.findUserByIdx(username);
-		logger.info("member.getUserGrade() >>>>>>>> " + member.getUserGrade());
 		return new UsernamePasswordAuthenticationToken(member.getUserId(), member.getUserPassword()
 				, Collections.singleton(new SimpleGrantedAuthority(member.getUserGrade()))); // 멤버 등급에 ROLE_ 접두사가 붙어야함 ex) ROLE_NORMAL
 	}
