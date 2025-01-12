@@ -10,6 +10,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.attendance.dao.MemberDao;
+import com.attendance.dao.RefreshTokenRepository;
+import com.attendance.util.ApiException;
 import com.attendance.vo.Member;
 
 import jakarta.servlet.FilterChain;
@@ -24,6 +26,7 @@ public class JwtAuthFilter extends OncePerRequestFilter{
 	
 	private final JwtProvider jwtProvider;
 	private final MemberDao memberDao;
+	private final RefreshTokenRepository tokenRepository;
 	
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException{
@@ -37,6 +40,15 @@ public class JwtAuthFilter extends OncePerRequestFilter{
 		}
 		
 		if(userName != null && !userName.isEmpty() && SecurityContextHolder.getContext().getAuthentication() == null) {
+			String uri = request.getRequestURI();
+			if(tokenRepository.findBlackList(token)) {
+				if(uri.contains("logout")) {
+					tokenRepository.blackSave(token);
+				}
+			}else {
+				throw new ApiException("401", "접근 권한이 없습니다.");
+			}
+			
 			// Spring Security Context Holder 인증 정보 set
 			SecurityContextHolder.getContext().setAuthentication(getUserAuth(userName));
 		}

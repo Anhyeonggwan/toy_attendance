@@ -24,6 +24,11 @@ public class MemberController {
 	
 	private final MemberService memberService;
 	
+	@PostMapping("/normal/logout")
+	public ResponseEntity<JSONObject> logout(@RequestParam Map<String, Object> map){
+		return ResponseEntity.ok(memberService.logout(map));
+	}
+	
 	@GetMapping("/isDupleId")
 	public ResponseEntity<JSONObject> isDupleId(@RequestParam(name = "userId") String userId){
 		return ResponseEntity.ok(memberService.isDupleIdpProc(userId));

@@ -111,11 +111,12 @@ public class MemberServiceImpl implements MemberService{
 		String accessToken = jwtProvider.generateAccessToken(member.getUserIdx());
 		
 		// 기존에 가지고 있는 사용자의 refresh token 제거
-		RefreshToken.removeUserRemoveRefreshToken(member.getUserIdx());
+		RefreshToken.removeUserRemoveRefreshToken(member.getUserId());
 		
 		// refresh token 생성 후 저장
 		String reFreshToken = jwtProvider.generateRefreshToken(member.getUserId()); 
-		RefreshToken.putRefreshToken(reFreshToken, member.getUserIdx());
+		RefreshToken.putRefreshToken(reFreshToken, member.getUserId());
+		System.out.println(">>> " + RefreshToken.refreshTokens);
 		
 		repository.save(new com.attendance.vo.RefreshToken(reFreshToken, member.getUserIdx()));
 		
@@ -125,6 +126,27 @@ public class MemberServiceImpl implements MemberService{
 		object.put("refreshToken", reFreshToken);
 		
 		return object;
+	}
+	
+	@Override
+	public JSONObject logout(Map<String, Object> map) {
+		
+		JSONObject obj = new JSONObject();
+		
+		String memberIdx = map.get("user_idx").toString();
+		String user_id = map.get("user_id").toString();
+		
+		if(ObjectUtils.isEmpty(memberIdx) || ObjectUtils.isEmpty(user_id)) throw new ApiException("503", "필수값이 존재하지 않습니다.");
+		
+		String refreshToken = RefreshToken.getRefreshTokenFromId(user_id);
+		RefreshToken.removeUserRemoveRefreshToken(user_id);
+		
+		repository.deleteRefreshToken(refreshToken);
+		
+		obj.put("code", "200");
+		obj.put("message", "로그아웃하였습니다.");
+		
+		return obj;
 	}
 	
 	@Override

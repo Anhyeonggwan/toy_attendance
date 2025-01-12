@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class RefreshToken {	// RefreshToken을 static 하게 관리하기 위한 클래스이다.
 	
-	protected static final Map<String, Integer> refreshTokens = new HashMap<>();
+	public static final Map<String, String> refreshTokens = new HashMap<>();
 	
 	/**
      * refresh token get
@@ -19,7 +19,7 @@ public class RefreshToken {	// RefreshToken을 static 하게 관리하기 위한
      * @param refreshToken refresh token
      * @return id
      */
-	public static Integer getRefreshToken(final String refreshToken) {
+	public static String getRefreshToken(final String refreshToken) {
 		return Optional.ofNullable(refreshTokens.get(refreshToken))
 				.orElseThrow(() -> new ApiException("401", "토근이 존재하지 않습니다."));
 	}
@@ -30,7 +30,7 @@ public class RefreshToken {	// RefreshToken을 static 하게 관리하기 위한
      * @param refreshToken refresh token
      * @param id id
      */
-	public static void putRefreshToken(final String refreshToken, int idx) {
+	public static void putRefreshToken(final String refreshToken, String idx) {
 		refreshTokens.put(refreshToken, idx);
 	}
 	
@@ -44,12 +44,24 @@ public class RefreshToken {	// RefreshToken을 static 하게 관리하기 위한
 	}
 	
 	// user refresh token remove
-	public static void removeUserRemoveRefreshToken(final int refreshToken) {
-		for(Map.Entry<String, Integer> entry : refreshTokens.entrySet()) {
-			if(entry.getValue() == refreshToken) {
+	public static void removeUserRemoveRefreshToken(final String userId) {
+		for(Map.Entry<String, String> entry : refreshTokens.entrySet()) {
+			if(entry.getValue().toString().equals(userId)) {
 				removeRefreshToken(entry.getKey());
 			}
 		}
+	}
+	
+	public static String getRefreshTokenFromId(final String memberIdx) {
+		String refreshToken = "";
+		for(Map.Entry<String, String> entry : refreshTokens.entrySet()) {
+			if(entry.getValue().toString().equals(memberIdx)) {
+				refreshToken = entry.getKey().toString();
+				break;
+			}
+		}
+		
+		return refreshToken;
 	}
 
 }

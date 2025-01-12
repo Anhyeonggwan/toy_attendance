@@ -4,9 +4,11 @@ import org.springframework.stereotype.Service;
 
 import com.attendance.config.JwtProvider;
 import com.attendance.config.RefreshToken;
+import com.attendance.dao.MemberDao;
 import com.attendance.dao.RefreshTokenRepository;
 import com.attendance.util.ApiException;
 import com.attendance.vo.JwtToken;
+import com.attendance.vo.Member;
 
 import lombok.RequiredArgsConstructor;
 
@@ -22,6 +24,7 @@ public class RefreshTokenServiceImpl implements RefreshTokenService{
 	
 	private final JwtProvider jwtProvider;
 	private final RefreshTokenRepository tokenRepository;
+	private final MemberDao memberDao;
 	
 	/**
      * refresh token을 이용하여 access token, refresh token 재발급
@@ -34,14 +37,16 @@ public class RefreshTokenServiceImpl implements RefreshTokenService{
 		
 		checkRefreshToken(refreshToken);
 		
-		//com.attendance.vo.RefreshToken token = tokenRepository.findByIdx(refreshToken);
-		//if(token == null) throw new ApiException("401", "토큰이 존재하지 않습니다.");
+		com.attendance.vo.RefreshToken token = tokenRepository.findByIdx(refreshToken);
+		if(token == null) throw new ApiException("1001", "토큰이 존재하지 않습니다.");
 		
 		var id = RefreshToken.getRefreshToken(refreshToken);
 		
-		String newAccessToken = jwtProvider.generateAccessToken(id);
+		Member member = memberDao.findMemberbyId(id.toString());
 		
-		RefreshToken.removeUserRemoveRefreshToken(id);
+		String newAccessToken = jwtProvider.generateAccessToken(member.getUserIdx());
+		
+		RefreshToken.removeUserRemoveRefreshToken(id); // 기존 refresh token 삭제
 		
 		String newRefreshToken = jwtProvider.generateRefreshToken(id);
 		RefreshToken.putRefreshToken(newRefreshToken, id);

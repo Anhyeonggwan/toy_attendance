@@ -1,7 +1,6 @@
 package com.attendance.dao;
 
 import java.util.Objects;
-import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -23,18 +22,38 @@ public class RefreshTokenRepository {
 	public void save(final RefreshToken refreshToken) {
         ValueOperations<String, Integer> valueOperations = redisTemplate.opsForValue();
         valueOperations.set(refreshToken.getRefreshToken(), refreshToken.getIdx());
-        redisTemplate.expire(refreshToken.getRefreshToken(), 60L, TimeUnit.SECONDS);
+        redisTemplate.expire(refreshToken.getRefreshToken(), 24L, TimeUnit.HOURS);
     }
 	
-	public Optional<RefreshToken> findByIdx(final String refreshToken) {
+	public void blackSave(final String accessToken) {
+		ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
+        valueOperations.set(accessToken, "blacklist");
+	}
+	
+	public boolean findBlackList(final String accessToken) {
+		boolean result = false;
+		ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
+		String blackList = valueOperations.get(accessToken);
+		
+		if(Objects.isNull(blackList)) result = true;
+		
+		return result;
+	}
+	
+	public void deleteRefreshToken(final String refreshToken) {
+		ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
+		redisTemplate.delete(refreshToken);
+	}
+	
+	public RefreshToken findByIdx(final String refreshToken) {
         ValueOperations<String, Integer> valueOperations = redisTemplate.opsForValue();
         int memberIdx = valueOperations.get(refreshToken);
-
+        
         if (Objects.isNull(memberIdx)) {
-            return Optional.empty();
+            return null;
         }
 
-        return Optional.of(new RefreshToken(refreshToken, memberIdx));
+        return new RefreshToken(refreshToken, memberIdx);
     }
 
 }

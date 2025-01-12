@@ -193,7 +193,6 @@ public class JwtProvider { // JWT를 생성, 검증, 및 관리를 담당하는 
         } catch (SecurityException e) {
             log.error("Invalid JWT signature: {}", e.getMessage());
         } catch (MalformedJwtException e) {
-        	System.out.println("여기?");
             log.error("Invalid JWT token: {}", e.getMessage());
         } catch (ExpiredJwtException e) {
             log.warn("JWT token is expired: {}", e.getMessage());
