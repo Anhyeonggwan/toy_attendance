@@ -41,9 +41,9 @@ public class JwtAuthFilter extends OncePerRequestFilter{
 		
 		if(userName != null && !userName.isEmpty() && SecurityContextHolder.getContext().getAuthentication() == null) {
 			String uri = request.getRequestURI();
-			if(tokenRepository.findBlackList(token)) {
+			if(tokenRepository.findBlackList(token.substring(7))) {
 				if(uri.contains("logout")) {
-					tokenRepository.blackSave(token);
+					tokenRepository.blackSave(token.substring(7));
 				}
 			}else {
 				throw new ApiException("401", "접근 권한이 없습니다.");

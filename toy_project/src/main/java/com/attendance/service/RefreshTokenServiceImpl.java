@@ -47,13 +47,15 @@ public class RefreshTokenServiceImpl implements RefreshTokenService{
 		String newAccessToken = jwtProvider.generateAccessToken(member.getUserIdx());
 		
 		RefreshToken.removeUserRemoveRefreshToken(id); // 기존 refresh token 삭제
+		tokenRepository.deleteRefreshToken(refreshToken);
 		
 		String newRefreshToken = jwtProvider.generateRefreshToken(id);
 		RefreshToken.putRefreshToken(newRefreshToken, id);
+		tokenRepository.save(new com.attendance.vo.RefreshToken(newRefreshToken, member.getUserIdx()));
 		
 		return JwtToken.builder()
 				.accessToken(newAccessToken)
-				//.refreshToken(newRefreshToken)
+				.refreshToken(newRefreshToken)
 				.build();
 	}
 	
