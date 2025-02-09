@@ -15,6 +15,8 @@ import com.attendance.dao.RefreshTokenRepository;
 import com.attendance.util.ApiException;
 import com.attendance.vo.Member;
 
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 
@@ -94,7 +96,7 @@ public class MemberServiceImpl implements MemberService{
 	
 	
 	@Override
-	public JSONObject getLogin(Map<String, Object> map) {
+	public JSONObject getLogin(Map<String, Object> map, HttpServletResponse response) {
 		
 		String user_id = map.get("user_id").toString();
 		String password = map.get("password").toString();
@@ -119,12 +121,25 @@ public class MemberServiceImpl implements MemberService{
 		
 		repository.save(new com.attendance.vo.RefreshToken(reFreshToken, member.getUserIdx()));
 		
+		setAccesstokenCookie(response, accessToken);
+		
 		JSONObject object = new JSONObject();
 		object.put("code", "200");
 		object.put("accessToken", accessToken);
 		object.put("refreshToken", reFreshToken);
+		object.put("idx", member.getUserIdx());
 		
 		return object;
+	}
+	
+	private void setAccesstokenCookie(HttpServletResponse response, String accessToken) {
+		Cookie cookie = new Cookie("accessToken", accessToken);
+		cookie.setHttpOnly(true); // 자바스크립트에서 사용 불가
+		//cookie.setSecure(true); // HTTPS에서만 전송 (배포 환경에서 사용)
+	    cookie.setMaxAge(1800); // 쿠키 만료 시간 (30분)
+	    cookie.setPath("/");
+	    
+	    response.addCookie(cookie);
 	}
 	
 	@Override

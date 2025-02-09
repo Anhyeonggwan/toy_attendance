@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.attendance.service.MemberService;
 import com.attendance.vo.Member;
 
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 
@@ -45,8 +46,8 @@ public class MemberController {
 	}
 	
 	@PostMapping("/login")
-	public ResponseEntity<JSONObject> getLogin(@RequestParam Map<String, Object> map){
-		return ResponseEntity.ok(memberService.getLogin(map));
+	public ResponseEntity<JSONObject> getLogin(@RequestParam Map<String, Object> map, HttpServletResponse response){
+		return ResponseEntity.ok(memberService.getLogin(map, response));
 	}
 
 }

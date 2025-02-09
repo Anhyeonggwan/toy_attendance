@@ -16,6 +16,7 @@ import com.attendance.vo.Member;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -30,7 +31,21 @@ public class JwtAuthFilter extends OncePerRequestFilter{
 	
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException{
-		final String token = request.getHeader("Authorization");
+		String token = "";
+		String accessToken = "";
+		Cookie[] cookies = request.getCookies();
+		if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if ("accessToken".equals(cookie.getName())) {
+                    accessToken = cookie.getValue();
+                    break;
+                }
+            }
+        }
+		logger.info("access token >>> " + accessToken);
+		
+		token = "Bearer " + accessToken;
+		
 		String userName = "";
 		
 		// Bearer token 검증 후 user name 조회

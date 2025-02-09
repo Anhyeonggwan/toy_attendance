@@ -55,12 +55,14 @@ public class SecurityConfig {
 				.httpBasic((httpBasic) -> httpBasic.disable())
 				.cors((cors) -> cors.disable())
 				.authorizeHttpRequests(request -> request.dispatcherTypeMatchers(DispatcherType.FORWARD).permitAll()
-						.requestMatchers("/user/login", "/", "/user/signup", "/user/isDupleId", "/refresh-token").permitAll()
+						.requestMatchers("/user/login", "/", "/user/signup", "/user/isDupleId", "/refresh-token", "/loginForm", "/js/**", "/css/**", "/", "/user/normal/pageDetail").permitAll()
 						.requestMatchers("/user/normal/**").hasRole("NORMAL")
 						.requestMatchers("/user/admin/**").hasRole("ADMIN")
 						.anyRequest().authenticated())
-				// .formLogin((formLogin) ->
-				// formLogin.loginPage("/login").defaultSuccessUrl("/"))
+				.formLogin((formLogin) ->
+									formLogin
+									.loginPage("/login.html")
+									.defaultSuccessUrl("/"))
 				.exceptionHandling((exceptionConfig) -> exceptionConfig.authenticationEntryPoint(unauthorizedEntryPoint)
 						.accessDeniedHandler(accessDeniedHandler))
 				.logout((logout) -> logout.logoutSuccessUrl("/").invalidateHttpSession(true))

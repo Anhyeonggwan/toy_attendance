@@ -6,11 +6,13 @@ import org.json.simple.JSONObject;
 
 import com.attendance.vo.Member;
 
+import jakarta.servlet.http.HttpServletResponse;
+
 public interface MemberService {
 	
 	public JSONObject signupProc(Member member);	// 회원 가입
 	public JSONObject isDupleIdpProc(String userId); // 회원 가입 시 아이디 중복 체크
-	public JSONObject getLogin(Map<String, Object> map); // 로그인
+	public JSONObject getLogin(Map<String, Object> map, HttpServletResponse response); // 로그인
 	public JSONObject getUserDetail(Map<String, String> map);	// 회원 상세
 	public JSONObject logout(Map<String, Object> map);
 

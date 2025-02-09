@@ -14,7 +14,7 @@ public class ExceptionHandler {
 		JSONObject obj = new JSONObject();
 		obj.put("code", ex.getCode());
 		obj.put("message", ex.getMessage());
-        return ResponseEntity.badRequest().body(obj);
+        return ResponseEntity.ok(obj);
     }
 
 }

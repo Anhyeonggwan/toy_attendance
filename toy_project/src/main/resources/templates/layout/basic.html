@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	  xmlns:th="http://www.thymeleaf.org" lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>웹사이트 제목</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}"> <!-- CSS 파일 연결 -->
+    <!-- jQuery CDN 추가 -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js" integrity="sha512-3j3VU6WC5rPQB4Ld1jnLV7Kd5xr+cq9avvhwqzbH/taCRNURoeEpoPBK9pDyeukwSxwRPJ8fDgvYXd6SkaZ2TA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    
+    <script src="/js/common.js"></script>
+</head>
+<body>
+    <header class="header">
+        <div class="logo">
+            <a th:href="@{/}">MyWebsite</a> <!-- 로고 텍스트 -->
+        </div>
+        <nav class="nav">
+            <ul>
+                <li><a th:href="@{/}">홈</a></li>
+                <li><a th:href="@{/about}">소개</a></li>
+                <li><a th:href="@{/services}">서비스</a></li>
+                <li><a th:href="@{/contact}">연락처</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="main-content">
+        <div layout:fragment="content"></div> <!-- 동적 메시지 표시 -->
+    </main>
+
+    <footer class="footer">
+        <p>&copy; 2023 MyWebsite. All rights reserved.</p>
+    </footer>
+</body>
+</html>

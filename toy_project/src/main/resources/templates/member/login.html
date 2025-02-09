@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	  xmlns:th="http://www.thymeleaf.org" lang="ko"
+	  layout:decorate="~{layout/basic.html}">
+<head>
+    <!-- member.js 파일 추가 -->
+    <script src="/js/member/member.js"></script>
+</head>
+    <div class="login-form" layout:fragment="content" id="content">
+        <h2>출퇴근 로그인</h2>
+        <input type="text" name="user_id" id="user_id" placeholder="아이디" required>
+        <input type="password" name="password" id="password" placeholder="비밀번호" required>
+        <button type="button" onclick="login();">로그인</button>
+        
+        <form id="moveForm">
+	    	<input type="hidden" name="idx" id="idx">
+	    </form>
+    </div>
+</html>
